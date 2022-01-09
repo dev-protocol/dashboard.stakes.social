@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-import { ChainName, connectWallet, detectChain, disconnectWallet, getAccountAddress } from './utility'
+import { ChainName, detectChain, getAccountAddress } from './utility'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import WalletContext from 'src/context/walletContext'
 import { WEB3_PROVIDER_ENDPOINT_KEY, WEB3_PROVIDER_ENDPOINT_HOSTS } from 'src/fixtures/wallet/constants'
@@ -26,30 +26,6 @@ const nonConnectedEthersProvider = (chain: ChainName) =>
   whenDefined(providerUrl(chain), url => new providers.JsonRpcProvider(url))
 const nonConnectedWeb3L1 = new Web3(providerUrl('ethereum')!)
 const nonConnectedEthersL1Provider = new providers.JsonRpcProvider(providerUrl('ethereum'))
-
-export const useConnectWallet = () => {
-  const { web3Modal, setProviders } = useContext(WalletContext)
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [isConnected, setIsConnected] = useState(false)
-
-  const connect = async () => {
-    setIsConnecting(true)
-    setIsConnected(false)
-    return connectWallet(setProviders, web3Modal).then(result => {
-      setIsConnecting(false)
-      setIsConnected(result)
-      return result
-    })
-  }
-
-  const disconnect = () => {
-    disconnectWallet(setProviders, web3Modal)
-    setIsConnecting(false)
-    setIsConnected(false)
-  }
-
-  return { isConnected, connect, disconnect, isConnecting }
-}
 
 export const useProvider = () => {
   const { requestedChain } = useNetworkInRouter()
