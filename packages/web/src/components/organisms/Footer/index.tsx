@@ -121,7 +121,7 @@ export const Footer = () => {
             >
               Buy DEV on Uniswap L2
             </FooterLink>
-            <FooterLink href={'/terms-of-use'}>Terms of Use</FooterLink>
+            <FooterLink href={'https://stakes.social/terms-of-use'}>Terms of Use</FooterLink>
             <FooterLink
               href={'https://github.com/dev-protocol/community/blob/main/CODE_OF_CONDUCT.md'}
               target={'_blank'}

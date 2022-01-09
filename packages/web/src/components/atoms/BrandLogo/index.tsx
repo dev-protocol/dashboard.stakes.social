@@ -3,7 +3,7 @@ import StakesSocial from '../Svgs/svg/Stakes-social.svg'
 import { A } from '../A'
 import styled from 'styled-components'
 
-const link = A({ href: '/' })
+const link = A({ href: 'https://stakes.social' })
 
 const Wrap = styled.span`
   color: white;

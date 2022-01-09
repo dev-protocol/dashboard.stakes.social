@@ -1,16 +1,15 @@
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { useRouter, NextRouter } from 'next/router'
-import { LinkWithNetwork } from 'src/components/atoms/LinkWithNetwork'
 import styled from 'styled-components'
-import { useConnectWallet, useDetectChain, useProvider } from 'src/fixtures/wallet/hooks'
+import { useDetectChain, useProvider } from 'src/fixtures/wallet/hooks'
 import { Button, Drawer, Popover } from 'antd'
 import StakesSocial from 'src/components/atoms/Svgs/svg/Stakes-social.svg'
-import { DisconnectOutlined, LinkOutlined, MoreOutlined } from '@ant-design/icons'
+import { MoreOutlined } from '@ant-design/icons'
 import { Container } from 'src/components/atoms/Container'
 import { ChainName } from 'src/fixtures/wallet/utility'
 import { switchChain } from 'src/fixtures/wallet/switch'
 import { providers } from 'ethers'
-import truncateEthAddress from 'truncate-eth-address'
 import EthereumEthLogo from 'src/components/atoms/Svgs/svg/EthereumEthLogo.svg'
 import ArbitrumLogo from 'src/components/atoms/Svgs/svg/ArbitrumLogo.svg'
 
@@ -50,11 +49,6 @@ const NavOpenedWallet = styled(Grid)`
   border: 4px solid whitesmoke;
   border-radius: 20px;
   padding: 1rem;
-`
-
-const NavOpenedC = styled(Grid)`
-  grid-auto-flow: column;
-  justify-content: space-between;
 `
 
 const NavOpenedN = styled(Grid)`
@@ -122,31 +116,31 @@ export const Navigations = [
   {
     key: 'pools',
     label: 'Pools',
-    pathname: '/',
+    pathname: 'https://stakes.social/',
     rewrite: true
   },
   {
     key: 'liquidity',
     label: 'Liquidity',
-    pathname: '/liquidity/v2',
+    pathname: 'https://stakes.social/liquidity/v2',
     rewrite: true
   },
   {
     key: 'create',
     label: 'Create',
-    pathname: '/create',
+    pathname: 'https://stakes.social/create',
     rewrite: true
   },
   {
     key: 'dashboard',
     label: 'Dashboard',
-    pathname: '/stats',
+    pathname: '/',
     rewrite: false
   },
   {
     key: 'portfolio',
     label: 'Portfolio',
-    pathname: '/profile',
+    pathname: 'https://stakes.social/profile',
     rewrite: true
   },
   {
@@ -181,8 +175,7 @@ const createSwitchNetwork =
 export const Navigation = () => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const { isConnected, connect, isConnecting } = useConnectWallet()
-  const { accountAddress, ethersProvider } = useProvider()
+  const { ethersProvider } = useProvider()
   const switchNetwork = createSwitchNetwork(router, ethersProvider)
 
   return (
@@ -226,29 +219,13 @@ export const Navigation = () => {
               <Testnet>Testnet</Testnet>
             </Popover>
           </NavOpenedN>
-          <NavOpenedC>
-            <span>
-              {isConnected && accountAddress ? (
-                <>
-                  <LinkOutlined /> Connected to {truncateEthAddress(accountAddress)}
-                </>
-              ) : (
-                <>
-                  <DisconnectOutlined /> Disconnected to a wallet
-                </>
-              )}
-            </span>
-          </NavOpenedC>
-          <Button onClick={connect} loading={isConnecting} type={isConnected ? 'link' : 'primary'}>
-            {isConnected ? 'Connected' : 'Connect'}
-          </Button>
         </NavOpenedWallet>
         <NavUl>
           {Navigations.map(nav => (
             <NavLi key={nav.key} style={{ margin: '0' }}>
-              <LinkWithNetwork href={nav.pathname} rewrite={nav.rewrite} passHref>
+              <Link href={nav.pathname} passHref>
                 <a>{nav.label}</a>
-              </LinkWithNetwork>
+              </Link>
             </NavLi>
           ))}
         </NavUl>
