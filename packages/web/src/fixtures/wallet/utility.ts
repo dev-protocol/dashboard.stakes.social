@@ -1,5 +1,4 @@
 import Web3 from 'web3'
-import Web3Modal from 'web3modal'
 import { message } from 'antd'
 import { AbstractProvider, provider } from 'web3-core'
 import { providers } from 'ethers'
@@ -16,10 +15,8 @@ export type ChainName = UndefinedOr<'ethereum' | 'ropsten' | 'arbitrum-one' | 'a
 
 const signCacheContainer: Map<string, signCache> = new Map()
 
-export const connectWallet = async (setProvidersHandler: Function, web3Modal?: Web3Modal) => {
-  const provider = await web3Modal?.connect().catch(() => {
-    return undefined
-  })
+export const connectWallet = async (setProvidersHandler: Function) => {
+  const provider = undefined
   if (provider === undefined) {
     return false
   }
@@ -45,8 +42,7 @@ export const connectWallet = async (setProvidersHandler: Function, web3Modal?: W
   return false
 }
 
-export const disconnectWallet = (setProvidersHandler: Function, web3Modal?: Web3Modal) => {
-  web3Modal?.clearCachedProvider()
+export const disconnectWallet = (setProvidersHandler: Function) => {
   setProvidersHandler(undefined)
 }
 

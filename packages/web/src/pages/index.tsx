@@ -23,9 +23,12 @@ const DevProtocolStats = (_: Props) => {
   const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const isL1 = chain === 'ethereum'
-  console.log(isL1, chain)
 
-  return isL1 ? (
+  return !isL1 ? (
+    <div style={{ display: 'flex', minHeight: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+      <Text type="secondary">(Not provide this feature yet on L2)</Text>
+    </div>
+  ) : (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
       <StyledHeadline>
@@ -42,10 +45,6 @@ const DevProtocolStats = (_: Props) => {
       </Container>
       <ControlChain />
       <Footer />
-    </div>
-  ) : (
-    <div style={{ display: 'flex', minHeight: '100vh', justifyContent: 'center', alignItems: 'center' }}>
-      <Text type="secondary">(Not provide this feature yet on L2)</Text>
     </div>
   )
 }
