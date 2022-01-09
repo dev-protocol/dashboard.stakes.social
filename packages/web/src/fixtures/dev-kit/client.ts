@@ -296,7 +296,6 @@ export const totalSupply = async (prov: providers.BaseProvider) => {
   const [, , client] = await newClient(prov)
   const getContractAddress = createGetContractAddress(prov)
   if (client) {
-    console.log(await getContractAddress(client, 'token'))
     return client.dev(await getContractAddress(client, 'token')).totalSupply()
   }
   return undefined
