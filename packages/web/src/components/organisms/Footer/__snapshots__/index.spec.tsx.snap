@@ -51,7 +51,7 @@ exports[`Footer Snapshot 1`] = `
             </a>
             <a
               class="sc-jrQzAO giJldq"
-              href="/terms-of-use"
+              href="https://stakes.social/terms-of-use"
             >
               Terms of Use
             </a>
@@ -75,7 +75,7 @@ exports[`Footer Snapshot 1`] = `
             >
               <a
                 class="sc-bdvvtL bKEjhC"
-                href="/"
+                href="https://stakes.social"
               >
                 <span
                   class="sc-gsDKAQ hSRZmM"
