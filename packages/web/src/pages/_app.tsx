@@ -19,7 +19,7 @@ const client = new ApolloClient({
 })
 
 class NextApp extends App<AppInitialProps & WithApolloProps<{}>> {
-  state = { isCurrencyDEV: true, web3: undefined, ethersProvider: undefined, selectedChain: 'ethereum' }
+  state = { isCurrencyDEV: true, web3: undefined, ethersProvider: undefined, selectedChain: 'ethereum' as ChainName }
 
   componentDidMount = () => {
     message.config({
@@ -28,8 +28,8 @@ class NextApp extends App<AppInitialProps & WithApolloProps<{}>> {
 
     const settings = localStorage.getItem('settings')
     if (settings) {
-      const { currency } = JSON.parse(settings)
-      this.setState({ isCurrencyDEV: currency === 'DEV' })
+      const { currency, selectedChain } = JSON.parse(settings)
+      this.setState({ isCurrencyDEV: currency === 'DEV', selectedChain })
     }
 
     // Google Analytics
@@ -60,9 +60,9 @@ class NextApp extends App<AppInitialProps & WithApolloProps<{}>> {
   setChain = (chain: ChainName) => {
     localStorage.setItem(
       'settings',
-      JSON.stringify({ currency: !this.state.isCurrencyDEV ? 'DEV' : 'USD', selectedChain: chain })
+      JSON.stringify({ currency: this.state.isCurrencyDEV ? 'DEV' : 'USD', selectedChain: chain })
     )
-    this.setState({ isCurrencyDEV: !this.state.isCurrencyDEV, selectedChain: chain })
+    this.setState({ isCurrencyDEV: this.state.isCurrencyDEV, selectedChain: chain })
   }
 
   render() {
@@ -81,7 +81,7 @@ class NextApp extends App<AppInitialProps & WithApolloProps<{}>> {
             value={{
               isCurrencyDEV: this.state.isCurrencyDEV,
               toggleCurrency: this.toggleCurrency,
-              selectedChain: 'ethereum',
+              selectedChain: this.state.selectedChain,
               setChain: this.setChain
             }}
           >

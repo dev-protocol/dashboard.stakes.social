@@ -10,8 +10,6 @@ import { DevChart } from 'src/components/organisms/DevChart'
 import { Container } from 'src/components/atoms/Container'
 import styled from 'styled-components'
 import { useDetectChain, useProvider } from 'src/fixtures/wallet/hooks'
-import Text from 'antd/lib/typography/Text'
-import { ControlChain } from 'src/components/organisms/ControlChain'
 
 type Props = {}
 
@@ -22,15 +20,10 @@ const StyledHeadline = styled(Headline)`
 const DevProtocolStats = (_: Props) => {
   const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
-  const isL1 = chain === 'ethereum'
 
   return chain === undefined ? (
     <div style={{ display: 'flex', minHeight: '100vh', justifyContent: 'center', alignItems: 'center' }}>
       <Spin />
-    </div>
-  ) : !isL1 ? (
-    <div style={{ display: 'flex', minHeight: '100vh', justifyContent: 'center', alignItems: 'center' }}>
-      <Text type="secondary">(Not provide this feature yet on L2)</Text>
     </div>
   ) : (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -47,7 +40,6 @@ const DevProtocolStats = (_: Props) => {
       <Container>
         <DevChart />
       </Container>
-      <ControlChain />
       <Footer />
     </div>
   )
