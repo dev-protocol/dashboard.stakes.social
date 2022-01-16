@@ -4,6 +4,7 @@ import { WithApolloProps } from 'next-with-apollo'
 import Head from 'next/head'
 import SettingContext from 'src/context/settingContext'
 import WalletContext from 'src/context/walletContext'
+import { ChainName } from 'src/fixtures/wallet/utility'
 import Web3 from 'web3'
 import { message } from 'antd'
 import * as gtag from 'src/lib/gtag'
@@ -18,7 +19,7 @@ const client = new ApolloClient({
 })
 
 class NextApp extends App<AppInitialProps & WithApolloProps<{}>> {
-  state = { isCurrencyDEV: true, web3: undefined, ethersProvider: undefined }
+  state = { isCurrencyDEV: true, web3: undefined, ethersProvider: undefined, selectedChain: 'ethereum' }
 
   componentDidMount = () => {
     message.config({
@@ -49,8 +50,19 @@ class NextApp extends App<AppInitialProps & WithApolloProps<{}>> {
   }
 
   toggleCurrency = () => {
-    localStorage.setItem('settings', JSON.stringify({ currency: !this.state.isCurrencyDEV ? 'DEV' : 'USD' }))
-    this.setState({ isCurrencyDEV: !this.state.isCurrencyDEV })
+    localStorage.setItem(
+      'settings',
+      JSON.stringify({ currency: !this.state.isCurrencyDEV ? 'DEV' : 'USD', selectedChain: this.state.selectedChain })
+    )
+    this.setState({ isCurrencyDEV: !this.state.isCurrencyDEV, selectedChain: this.state.selectedChain })
+  }
+
+  setChain = (chain: ChainName) => {
+    localStorage.setItem(
+      'settings',
+      JSON.stringify({ currency: !this.state.isCurrencyDEV ? 'DEV' : 'USD', selectedChain: chain })
+    )
+    this.setState({ isCurrencyDEV: !this.state.isCurrencyDEV, selectedChain: chain })
   }
 
   render() {
@@ -66,7 +78,12 @@ class NextApp extends App<AppInitialProps & WithApolloProps<{}>> {
           }}
         >
           <SettingContext.Provider
-            value={{ isCurrencyDEV: this.state.isCurrencyDEV, toggleCurrency: this.toggleCurrency }}
+            value={{
+              isCurrencyDEV: this.state.isCurrencyDEV,
+              toggleCurrency: this.toggleCurrency,
+              selectedChain: 'ethereum',
+              setChain: this.setChain
+            }}
           >
             <Head>
               <title>Stakes.social</title>

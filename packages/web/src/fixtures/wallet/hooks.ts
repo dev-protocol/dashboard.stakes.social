@@ -1,11 +1,10 @@
-import Web3 from 'web3'
-import { ChainName, detectChain, getAccountAddress } from './utility'
+import { ChainName, detectChain } from './utility'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import WalletContext from 'src/context/walletContext'
+import SettingContext from 'src/context/settingContext'
 import { WEB3_PROVIDER_ENDPOINT_KEY, WEB3_PROVIDER_ENDPOINT_HOSTS } from 'src/fixtures/wallet/constants'
 import { providers } from 'ethers'
 import { whenDefined } from '@devprotocol/util-ts'
-import { useNetworkInRouter } from '../utility'
 
 const providerUrl = (chain: ChainName) =>
   chain
@@ -21,28 +20,17 @@ const providerUrl = (chain: ChainName) =>
           : WEB3_PROVIDER_ENDPOINT_HOSTS.MAIN
       }/${WEB3_PROVIDER_ENDPOINT_KEY}`
     : undefined
-const nonConnectedWeb3 = (chain: ChainName) => whenDefined(providerUrl(chain), url => new Web3(url))
 const nonConnectedEthersProvider = (chain: ChainName) =>
   whenDefined(providerUrl(chain), url => new providers.JsonRpcProvider(url))
-const nonConnectedWeb3L1 = new Web3(providerUrl('ethereum')!)
 const nonConnectedEthersL1Provider = new providers.JsonRpcProvider(providerUrl('ethereum'))
 
 export const useProvider = () => {
-  const { requestedChain } = useNetworkInRouter()
-  const { web3, ethersProvider } = useContext(WalletContext)
-  const ncWeb3 = useMemo(() => nonConnectedWeb3(requestedChain ?? 'ethereum'), [requestedChain])
+  const { ethersProvider } = useContext(WalletContext)
+  const { selectedChain: requestedChain } = useContext(SettingContext)
   const ncEthersProvider = useMemo(() => nonConnectedEthersProvider(requestedChain ?? 'ethereum'), [requestedChain])
-  const [accountAddress, setAccountAddress] = useState<undefined | string>(undefined)
-  useEffect(() => {
-    getAccountAddress(web3).then(x => setAccountAddress(x))
-  }, [web3])
   return {
-    web3,
     ethersProvider,
-    accountAddress,
-    nonConnectedWeb3: ncWeb3,
     nonConnectedEthersProvider: ncEthersProvider,
-    nonConnectedWeb3L1,
     nonConnectedEthersL1Provider
   }
 }

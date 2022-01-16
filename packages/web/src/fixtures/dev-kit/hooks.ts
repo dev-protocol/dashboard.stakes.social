@@ -1,5 +1,4 @@
 import {
-  getMyStakingAmount,
   getRewardsAmount,
   getTotalStakingAmount,
   withdrawHolderAmount,
@@ -7,7 +6,6 @@ import {
   getTreasuryAmount,
   stakeDev,
   withdrawStakingAmount,
-  getMyStakingRewardAmount,
   createProperty,
   marketScheme,
   authenticate,
@@ -19,7 +17,6 @@ import {
   createAndAuthenticate,
   propertyAuthor,
   balanceOf,
-  allClaimedRewards,
   propertyName,
   propertySymbol,
   balanceOfProperty,
@@ -84,11 +81,11 @@ const validAddress = (address: string = ''): boolean =>
   typeof address === 'string' && isAddress(address) && address.length === 42
 
 export const useGetTotalRewardsAmount = (propertyAddress: string) => {
-  const { nonConnectedEthersProvider: prov, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider: prov } = useProvider()
   const { name: chain } = useDetectChain(prov)
   const { currency, toCurrency } = useCurrency()
   const { data, error } = useSWR<undefined | UnwrapFunc<typeof getRewardsAmount>, Error>(
-    SWRCachePath.getTotalRewardsAmount(propertyAddress, accountAddress, chain),
+    SWRCachePath.getTotalRewardsAmount(propertyAddress, chain),
     () => whenDefined(prov, x => getRewardsAmount(x, propertyAddress)),
     {
       onError: err => {
@@ -138,32 +135,6 @@ export const useWithdrawHolderReward = () => {
   return { withdrawHolder, isLoading, error }
 }
 
-export const useGetMyHolderAmount = (propertyAddress?: string) => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
-  const { name: chain } = useDetectChain(nonConnectedEthersProvider)
-  const { data, error } = useSWR<UnwrapFunc<typeof getMyHolderAmount>, Error>(
-    SWRCachePath.getMyHolderAmount(chain, propertyAddress, accountAddress),
-    () =>
-      whenDefinedAll([nonConnectedEthersProvider, propertyAddress, accountAddress], ([client, property, account]) =>
-        getMyHolderAmount(client, property, account)
-      ),
-    {
-      onError: err => {
-        console.log(err)
-        message.error(err.message)
-      },
-      revalidateOnFocus: false,
-      focusThrottleInterval: 0
-    }
-  )
-  const [withdrawable, , , total] = data || []
-  return {
-    myHolderAmount: withdrawable ? toNaturalNumber(withdrawable) : undefined,
-    total: total ? toNaturalNumber(total) : undefined,
-    error
-  }
-}
-
 export const useGetHolderAmountByAddress = (propertyAddress: string, srcAddress?: string) => {
   const { nonConnectedEthersProvider } = useProvider()
   const { data, error } = useSWR<UnwrapFunc<typeof getMyHolderAmount>, Error>(
@@ -211,11 +182,11 @@ export const useGetTreasuryAmount = (propertyAddress?: string) => {
 }
 
 export const useGetTotalStakingAmount = (propertyAddress: string) => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { currency, toCurrency } = useCurrency()
   const { data, error } = useSWR<UnwrapFunc<typeof getTotalStakingAmount>, Error>(
-    SWRCachePath.getTotalStakingAmount(propertyAddress, accountAddress, chain),
+    SWRCachePath.getTotalStakingAmount(propertyAddress, chain),
     () => whenDefined(nonConnectedEthersProvider, x => getTotalStakingAmount(x, propertyAddress)),
     {
       onError: err => {
@@ -227,57 +198,6 @@ export const useGetTotalStakingAmount = (propertyAddress: string) => {
     }
   )
   return { totalStakingAmount: whenDefined(data, x => toCurrency(toNaturalNumber(x))), currency, error }
-}
-
-export const useGetMyStakingRewardAmount = (propertyAddress?: string) => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
-  const { name: chain } = useDetectChain(nonConnectedEthersProvider)
-  const { currency, toCurrency } = useCurrency()
-  const { data, error } = useSWR<UnwrapFunc<typeof getMyStakingRewardAmount>, Error>(
-    SWRCachePath.getMyStakingRewardAmount(chain, propertyAddress, accountAddress),
-    () =>
-      whenDefinedAll([nonConnectedEthersProvider, propertyAddress, accountAddress], ([client, property, account]) =>
-        getMyStakingRewardAmount(client, property, account)
-      ),
-    {
-      onError: err => {
-        console.log(err)
-        message.error(err.message)
-      },
-      revalidateOnFocus: false,
-      focusThrottleInterval: 0
-    }
-  )
-
-  return {
-    dev: whenDefined(data, x => toNaturalNumber(x)),
-    myStakingRewardAmount: whenDefined(data, x => toCurrency(toNaturalNumber(x))),
-    currency,
-    error
-  }
-}
-
-export const useGetMyStakingAmount = (propertyAddress?: string) => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
-  const { name: chain } = useDetectChain(nonConnectedEthersProvider)
-  const { currency, toCurrency } = useCurrency()
-  const { data, error } = useSWR<UnwrapFunc<typeof getMyStakingAmount>, Error>(
-    SWRCachePath.getMyStakingAmount(chain, propertyAddress, accountAddress),
-    () =>
-      whenDefinedAll([nonConnectedEthersProvider, propertyAddress, accountAddress], ([client, property, account]) =>
-        getMyStakingAmount(client, property, account)
-      ),
-    {
-      onError: err => {
-        console.log(err)
-        message.error(err.message)
-      },
-      revalidateOnFocus: false,
-      focusThrottleInterval: 0
-    }
-  )
-
-  return { myStakingAmount: whenDefined(data, x => toCurrency(toNaturalNumber(x))), currency, error }
 }
 
 export const useWithdrawStakingReward = () => {
@@ -368,10 +288,10 @@ export const useStake = () => {
 }
 
 export const useTotalStakingAmountOnProtocol = () => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { data: stakingAmount, error } = useSWR<UnwrapFunc<typeof getTotalStakingAmountOnProtocol>, Error>(
-    SWRCachePath.getTotalStakingAmountOnProtocol(chain, accountAddress),
+    SWRCachePath.getTotalStakingAmountOnProtocol(chain),
     () => whenDefined(nonConnectedEthersProvider, x => getTotalStakingAmountOnProtocol(x)),
     {
       onError: err => {
@@ -389,10 +309,10 @@ export const useTotalStakingAmountOnProtocol = () => {
 }
 
 export const useTotalStakingRatio = () => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { data: totalSupplyValue, error: totalSupplyError } = useSWR<UnwrapFunc<typeof totalSupply>, Error>(
-    SWRCachePath.totalSupply(chain, accountAddress),
+    SWRCachePath.totalSupply(chain),
     () => whenDefined(nonConnectedEthersProvider, x => totalSupply(x)),
     {
       onError: err => {
@@ -407,7 +327,7 @@ export const useTotalStakingRatio = () => {
     UnwrapFunc<typeof getTotalStakingAmountOnProtocol>,
     Error
   >(
-    SWRCachePath.getTotalStakingAmountOnProtocol(chain, accountAddress),
+    SWRCachePath.getTotalStakingAmountOnProtocol(chain),
     () => whenDefined(nonConnectedEthersProvider, x => getTotalStakingAmountOnProtocol(x)),
     {
       onError: err => {
@@ -425,10 +345,10 @@ export const useTotalStakingRatio = () => {
 }
 
 export const useStakingShare = (propertyAddress: string) => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { data: inProperty, error: inPropertyError } = useSWR<UnwrapFunc<typeof getTotalStakingAmount>, Error>(
-    SWRCachePath.getTotalStakingAmount(propertyAddress, accountAddress),
+    SWRCachePath.getTotalStakingAmount(propertyAddress),
     () => whenDefined(nonConnectedEthersProvider, x => getTotalStakingAmount(x, propertyAddress)),
     {
       onError: err => {
@@ -443,7 +363,7 @@ export const useStakingShare = (propertyAddress: string) => {
     UnwrapFunc<typeof getTotalStakingAmountOnProtocol>,
     Error
   >(
-    SWRCachePath.getTotalStakingAmountOnProtocol(chain, accountAddress),
+    SWRCachePath.getTotalStakingAmountOnProtocol(chain),
     () => whenDefined(nonConnectedEthersProvider, x => getTotalStakingAmountOnProtocol(x)),
     {
       onError: err => {
@@ -573,11 +493,11 @@ export const useCreateAndAuthenticate = () => {
 }
 
 export const useAPY = () => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { isL1 } = useIsL1()
   const { data: maxRewards, error: maxRewardsError } = useSWR<UnwrapFunc<typeof calculateMaxRewardsPerBlock>, Error>(
-    SWRCachePath.calculateMaxRewardsPerBlock(chain, accountAddress),
+    SWRCachePath.calculateMaxRewardsPerBlock(chain),
     () => whenDefined(nonConnectedEthersProvider, x => calculateMaxRewardsPerBlock(x).catch(() => '0')),
     {
       onError: err => {
@@ -592,7 +512,7 @@ export const useAPY = () => {
     UnwrapFunc<typeof getTotalStakingAmountOnProtocol>,
     Error
   >(
-    SWRCachePath.getTotalStakingAmountOnProtocol(chain, accountAddress),
+    SWRCachePath.getTotalStakingAmountOnProtocol(chain),
     () => whenDefined(nonConnectedEthersProvider, x => getTotalStakingAmountOnProtocol(x)),
     {
       onError: err => {
@@ -628,10 +548,10 @@ export const useAPY = () => {
 }
 
 export const useTotalSupply = () => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { data: totalSupplyValue, error } = useSWR<UnwrapFunc<typeof totalSupply>, Error>(
-    SWRCachePath.totalSupply(chain, accountAddress),
+    SWRCachePath.totalSupply(chain),
     () => whenDefined(nonConnectedEthersProvider, x => totalSupply(x)),
     {
       onError: err => {
@@ -647,10 +567,10 @@ export const useTotalSupply = () => {
 }
 
 export const useCirculatingSupply = () => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { data: totalSupplyValue, error } = useSWR<UnwrapFunc<typeof totalSupply>, Error>(
-    SWRCachePath.totalSupply(chain, accountAddress),
+    SWRCachePath.totalSupply(chain),
     () => whenDefined(nonConnectedEthersProvider, x => totalSupply(x)),
     {
       onError: err => {
@@ -689,11 +609,11 @@ export const useCirculatingSupply = () => {
 }
 
 export const useAnnualSupplyGrowthRatio = () => {
-  const { nonConnectedEthersProvider, nonConnectedEthersL1Provider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider, nonConnectedEthersL1Provider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { isL1 } = useIsL1()
   const { data: maxRewards, error: maxRewardsError } = useSWR<UnwrapFunc<typeof calculateMaxRewardsPerBlock>, Error>(
-    SWRCachePath.calculateMaxRewardsPerBlock(chain, accountAddress),
+    SWRCachePath.calculateMaxRewardsPerBlock(chain),
     () => whenDefined(nonConnectedEthersProvider, x => calculateMaxRewardsPerBlock(x).catch(() => '0')),
     {
       onError: err => {
@@ -705,7 +625,7 @@ export const useAnnualSupplyGrowthRatio = () => {
     }
   )
   const { data: totalSupplyValue, error: totalSupplyError } = useSWR<UnwrapFunc<typeof totalSupply>, Error>(
-    SWRCachePath.totalSupply(chain, accountAddress),
+    SWRCachePath.totalSupply(chain),
     () => whenDefined(nonConnectedEthersL1Provider, x => totalSupply(x)),
     {
       onError: err => {
@@ -749,10 +669,10 @@ export const useGetPolicyAddressesList = () => {
 
 export const usePropertyAuthor = (propertyAddress?: string) => {
   const shouldFetch = propertyAddress && propertyAddress.startsWith('0x')
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { data, error } = useSWR<undefined | UnwrapFunc<typeof totalSupply>, Error>(
-    shouldFetch ? SWRCachePath.propertyAuthor(chain, propertyAddress, accountAddress) : null,
+    shouldFetch ? SWRCachePath.propertyAuthor(chain, propertyAddress) : null,
     () =>
       whenDefinedAll([nonConnectedEthersProvider, propertyAddress], ([client, property]) =>
         propertyAuthor(client, property)
@@ -770,47 +690,11 @@ export const usePropertyAuthor = (propertyAddress?: string) => {
   return { author: data, error }
 }
 
-export const useBalanceOf = () => {
-  const { currency, toCurrency } = useCurrency()
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
-  const { name: chain } = useDetectChain(nonConnectedEthersProvider)
-  const { data, error } = useSWR<BigNumber | undefined, Error>(
-    SWRCachePath.balanceOf(chain, accountAddress),
-    () =>
-      whenDefinedAll([nonConnectedEthersProvider, accountAddress], ([client, account]) =>
-        balanceOf(client, account).then(toBigNumber)
-      ),
-    { revalidateOnFocus: false, focusThrottleInterval: 0 }
-  )
-  const humanizedDev = whenDefined(data, toNaturalNumber)
-  const amount = toCurrency(humanizedDev)
-  return { amount, currency, error }
-}
-
-export const useAllClaimedRewards = () => {
-  const { currency, toCurrency } = useCurrency()
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
-  const { data, error } = useSWR<BigNumber | undefined, Error>(
-    SWRCachePath.allClaimedRewards(accountAddress),
-    () =>
-      whenDefinedAll([nonConnectedEthersProvider, accountAddress], ([client, account]) =>
-        allClaimedRewards(client, account).then(allEvents => {
-          return allEvents.reduce((a, c) => a.plus(c.args?.value), toBigNumber(0))
-        })
-      ),
-    { revalidateOnFocus: false, focusThrottleInterval: 0 }
-  )
-  const humanizedDev = whenDefined(data, toNaturalNumber)
-  const amount = toCurrency(humanizedDev)
-
-  return { amount, currency, error }
-}
-
 export const usePropertyName = (propertyAddress?: string) => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { data, error } = useSWR<UnwrapFunc<typeof propertyName>, Error>(
-    SWRCachePath.propertyName(chain, propertyAddress, accountAddress),
+    SWRCachePath.propertyName(chain, propertyAddress),
     () =>
       validAddress(propertyAddress)
         ? whenDefinedAll([nonConnectedEthersProvider, propertyAddress], ([client, property]) =>
@@ -831,10 +715,10 @@ export const usePropertyName = (propertyAddress?: string) => {
 }
 
 export const usePropertySymbol = (propertyAddress?: string) => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
+  const { nonConnectedEthersProvider } = useProvider()
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const { data, error } = useSWR<UnwrapFunc<typeof propertySymbol>, Error>(
-    SWRCachePath.propertySymbol(chain, propertyAddress, accountAddress),
+    SWRCachePath.propertySymbol(chain, propertyAddress),
     () =>
       validAddress(propertyAddress)
         ? whenDefinedAll([nonConnectedEthersProvider, propertyAddress], ([client, property]) =>
@@ -852,20 +736,6 @@ export const usePropertySymbol = (propertyAddress?: string) => {
   )
 
   return { symbol: data, error }
-}
-
-export const useBalanceOfProperty = (propertyAddress?: string) => {
-  const { nonConnectedEthersProvider, accountAddress } = useProvider()
-  const { name: chain } = useDetectChain(nonConnectedEthersProvider)
-  const { data, error } = useSWR<BigNumber | undefined, Error>(
-    SWRCachePath.balanceOfProperty(chain, propertyAddress, accountAddress),
-    () =>
-      whenDefinedAll([nonConnectedEthersProvider, propertyAddress, accountAddress], ([client, property, account]) =>
-        balanceOfProperty(client, property, account).then(toBigNumber)
-      ),
-    { revalidateOnFocus: false, focusThrottleInterval: 0 }
-  )
-  return { balance: data, error }
 }
 
 export const useBalanceOfAccountProperty = (propertyAddress?: string, accountAddress?: string) => {

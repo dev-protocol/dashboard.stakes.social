@@ -1,8 +1,8 @@
 export const SWRCachePath = {
-  getTotalRewardsAmount: (propertyAddress: string, user?: string, chain?: string) =>
-    `propertyAddresses/${chain}/${user}${propertyAddress}/getTotalRewardsAmount`,
-  getTotalStakingAmount: (propertyAddress: string, user?: string, chain?: string) =>
-    `propertyAddresses/${chain}/${user}${propertyAddress}/getTotalStakingAmount`,
+  getTotalRewardsAmount: (propertyAddress: string, chain?: string) =>
+    `propertyAddresses/${chain}/${propertyAddress}/getTotalRewardsAmount`,
+  getTotalStakingAmount: (propertyAddress: string, chain?: string) =>
+    `propertyAddresses/${chain}/${propertyAddress}/getTotalStakingAmount`,
   getMyHolderAmount: (chain?: string, propertyAddress?: string, user?: string) =>
     `propertyAddresses/${chain}/${user}${propertyAddress}/getMyHolderAmount`,
   getTreasuryAmount: (chain?: string, propertyAddress?: string) =>
@@ -11,20 +11,16 @@ export const SWRCachePath = {
     `propertyAddresses/${chain}/${user}${propertyAddress}/getMyStakingRewardAmount`,
   getMyStakingAmount: (chain?: string, propertyAddress?: string, user?: string) =>
     `propertyAddresses/${chain}/${user}${propertyAddress}/getMyStakingAmount`,
-  getTotalStakingAmountOnProtocol: (chain?: string, user?: string) =>
-    `getTotalStakingAmountOnProtocol/${chain}/${user}`,
-  calculateMaxRewardsPerBlock: (chain?: string, user?: string) => `calculateMaxRewardsPerBlock/${chain}/${user}`,
-  totalSupply: (chain?: string, user?: string) => `totalSupply/${chain}/${user}`,
+  getTotalStakingAmountOnProtocol: (chain?: string) => `getTotalStakingAmountOnProtocol/${chain}`,
+  calculateMaxRewardsPerBlock: (chain?: string) => `calculateMaxRewardsPerBlock/${chain}`,
+  totalSupply: (chain?: string) => `totalSupply/${chain}`,
   holdersShare: (chain?: string, amount?: string, lockedups?: string, user?: string) =>
     `${chain}/amount/${amount}/lockedups/${lockedups}/holdersShare/${user}`,
-  propertyAuthor: (chain?: string, propertyAddress?: string, user?: string) =>
-    `propertyAddresses/${user}${propertyAddress}/author/${chain}`,
+  propertyAuthor: (chain?: string, propertyAddress?: string) => `propertyAddresses/${propertyAddress}/author/${chain}`,
   balanceOf: (chain?: string, user?: string) => `balanceOf/${user}/${chain}`,
   allClaimedRewards: (user?: string) => `allClaimedRewards/${user}`,
-  propertyName: (chain?: string, propertyAddress?: string, user?: string) =>
-    `propertyAddresses/${user}${propertyAddress}/name/${chain}`,
-  propertySymbol: (chain?: string, propertyAddress?: string, user?: string) =>
-    `propertyAddresses/${user}${propertyAddress}/symbol/${chain}`,
+  propertyName: (chain?: string, propertyAddress?: string) => `propertyAddresses/${propertyAddress}/name/${chain}`,
+  propertySymbol: (chain?: string, propertyAddress?: string) => `propertyAddresses/${propertyAddress}/symbol/${chain}`,
   balanceOfProperty: (chain?: string, propertyAddress?: string, user?: string) =>
     `propertyAddresses/${user}${propertyAddress}/balanceOf/${chain}`,
   detectStokens: (chain?: string, propertyAddress?: string, user?: string) =>

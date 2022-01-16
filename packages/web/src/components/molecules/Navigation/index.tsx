@@ -1,15 +1,13 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Link from 'next/link'
-import { useRouter, NextRouter } from 'next/router'
 import styled from 'styled-components'
-import { useDetectChain, useProvider } from 'src/fixtures/wallet/hooks'
 import { Button, Drawer, Popover } from 'antd'
-import StakesSocial from 'src/components/atoms/Svgs/svg/Stakes-social.svg'
 import { MoreOutlined } from '@ant-design/icons'
+import { useDetectChain, useProvider } from 'src/fixtures/wallet/hooks'
+import SettingContext from 'src/context/settingContext'
+import StakesSocial from 'src/components/atoms/Svgs/svg/Stakes-social.svg'
 import { Container } from 'src/components/atoms/Container'
 import { ChainName } from 'src/fixtures/wallet/utility'
-import { switchChain } from 'src/fixtures/wallet/switch'
-import { providers } from 'ethers'
 import EthereumEthLogo from 'src/components/atoms/Svgs/svg/EthereumEthLogo.svg'
 import ArbitrumLogo from 'src/components/atoms/Svgs/svg/ArbitrumLogo.svg'
 
@@ -159,24 +157,17 @@ const StakesSocialLogo = () => (
 )
 
 const ConnectedOrDisconnected = ({ chainName }: { chainName: ChainName }) => {
-  const { ethersProvider } = useProvider()
-  const { name } = useDetectChain(ethersProvider)
+  const { nonConnectedEthersProvider } = useProvider()
+  const { name } = useDetectChain(nonConnectedEthersProvider)
   return chainName === name ? <GreenCircle /> : <GrayCircle />
 }
 
-const createSwitchNetwork =
-  (router: NextRouter, provider?: providers.BaseProvider) => (chainName: ChainName) => async () => {
-    const res = await switchChain(chainName, provider)
-    if (res === true) {
-      router.push(`/${chainName}`)
-    }
-  }
+const createSwitchNetwork = (setter: Function) => (chainName: ChainName) => async () => setter(chainName)
 
 export const Navigation = () => {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
-  const { ethersProvider } = useProvider()
-  const switchNetwork = createSwitchNetwork(router, ethersProvider)
+  const { setChain } = useContext(SettingContext)
+  const switchNetwork = createSwitchNetwork(setChain)
 
   return (
     <Nav>

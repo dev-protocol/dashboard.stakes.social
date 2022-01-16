@@ -1,5 +1,5 @@
 import React from 'react'
-import { Divider } from 'antd'
+import { Divider, Spin } from 'antd'
 import { Footer } from 'src/components/organisms/Footer'
 import { Header } from 'src/components/organisms/Header'
 import { DevStats } from 'src/components/organisms/DevStats'
@@ -24,7 +24,11 @@ const DevProtocolStats = (_: Props) => {
   const { name: chain } = useDetectChain(nonConnectedEthersProvider)
   const isL1 = chain === 'ethereum'
 
-  return !isL1 ? (
+  return chain === undefined ? (
+    <div style={{ display: 'flex', minHeight: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+      <Spin />
+    </div>
+  ) : !isL1 ? (
     <div style={{ display: 'flex', minHeight: '100vh', justifyContent: 'center', alignItems: 'center' }}>
       <Text type="secondary">(Not provide this feature yet on L2)</Text>
     </div>
